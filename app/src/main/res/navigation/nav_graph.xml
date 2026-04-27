@@ -42,7 +42,7 @@
         app:destination="@id/addEditTransactionFragment" />
 
     <!-- Dialog Fragment -->
-    <fragment
+    <dialog
         android:id="@+id/addEditTransactionFragment"
         android:name="com.example.easebudgetv1.ui.fragments.AddEditTransactionFragment"
         android:label="Add Transaction"
@@ -51,7 +51,7 @@
             android:name="transactionId"
             app:argType="long"
             android:defaultValue="-1L" />
-    </fragment>
+    </dialog>
 
     <!-- Fragment to Fragment Navigation -->
     <action

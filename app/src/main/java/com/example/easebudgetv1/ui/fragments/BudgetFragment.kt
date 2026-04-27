@@ -1,7 +1,16 @@
+/**
+ * Group: Tech Hustlers
+ * Members:
+ * - ST10451774 - Acazia Ammon
+ * - ST10452404 - Masike Jr Rasenyalo
+ * - ST10452409 - Liyema Masala
+ */
 package com.example.easebudgetv1.ui.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -135,7 +144,7 @@ class BudgetFragment : Fragment() {
         
         // Observe ready to assign
         budgetViewModel.readyToAssign.observe(viewLifecycleOwner, Observer { amount ->
-            readyToAssignSummary.text = CurrencyUtils.formatCurrency(amount)
+            readyToAssignSummary.text = CurrencyUtils.formatCurrency(amount ?: 0.0)
         })
         
         // Observe budget state
@@ -172,26 +181,36 @@ class BudgetFragment : Fragment() {
         titleEditText.setText("Monthly Budget")
         titleEditText.isEnabled = false
         
-        // Set current budget amount
+        // Set current budget amount - format it cleanly for editing
         val currentBudget = budgetViewModel.budgetGoal.value?.monthlyTotalBudget ?: 0.0
-        amountEditText.setText(CurrencyUtils.formatCurrencyWithoutSymbol(currentBudget))
+        amountEditText.setText(if(currentBudget > 0) String.format("%.2f", currentBudget) else "")
         
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Edit Monthly Budget")
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton("Save", null) // Set to null to override later
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.setOnShowListener {
+            val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            saveButton.setOnClickListener {
                 val amountStr = amountEditText.text?.toString() ?: ""
-                val amount = CurrencyUtils.parseCurrency(amountStr) ?: 0.0
+                val amount = amountStr.toDoubleOrNull() ?: 0.0
                 
                 if (amount > 0.0) {
                     val calendar = java.util.Calendar.getInstance()
                     budgetViewModel.createOrUpdateBudgetGoal(
                         amount, 0.0, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH)
                     )
+                    dialog.dismiss()
+                } else {
+                    amountEditText.error = "Please enter a valid amount"
                 }
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
+        
+        dialog.show()
     }
     
     private fun showAddCategoryLimitDialog() {
@@ -202,14 +221,29 @@ class BudgetFragment : Fragment() {
         titleEditText.setText("Category Limit")
         titleEditText.isEnabled = false
         
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Add Category Limit")
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
-                showCategorySelectionDialog(amountEditText.text?.toString())
-            }
+            .setPositiveButton("Save", null)
             .setNegativeButton("Cancel", null)
-            .show()
+            .create()
+
+        dialog.setOnShowListener {
+            val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            saveButton.setOnClickListener {
+                val amountStr = amountEditText.text?.toString() ?: ""
+                val amount = amountStr.toDoubleOrNull() ?: 0.0
+                
+                if (amount > 0.0) {
+                    dialog.dismiss()
+                    showCategorySelectionDialog(amountStr)
+                } else {
+                    amountEditText.error = "Please enter a valid amount"
+                }
+            }
+        }
+        
+        dialog.show()
     }
     
     private fun showCategorySelectionDialog(amountStr: String?) {
@@ -220,7 +254,7 @@ class BudgetFragment : Fragment() {
             .setTitle("Select Category")
             .setItems(categoryNames) { _, which ->
                 val selectedCategory = categories[which]
-                val amount = CurrencyUtils.parseCurrency(amountStr ?: "") ?: 0.0
+                val amount = amountStr?.toDoubleOrNull() ?: 0.0
                 
                 if (amount > 0.0) {
                     budgetViewModel.updateCategoryLimit(selectedCategory.id, amount)
@@ -236,20 +270,30 @@ class BudgetFragment : Fragment() {
         
         titleEditText.setText(category.name)
         titleEditText.isEnabled = false
-        amountEditText.setText(CurrencyUtils.formatCurrencyWithoutSymbol(category.monthlyLimit))
+        amountEditText.setText(if(category.monthlyLimit > 0) String.format("%.2f", category.monthlyLimit) else "")
         
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Edit Category Limit")
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton("Save", null)
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.setOnShowListener {
+            val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            saveButton.setOnClickListener {
                 val amountStr = amountEditText.text?.toString() ?: ""
-                val amount = CurrencyUtils.parseCurrency(amountStr) ?: 0.0
+                val amount = amountStr.toDoubleOrNull() ?: 0.0
                 
                 if (amount > 0.0) {
                     budgetViewModel.updateCategoryLimit(category.id, amount)
+                    dialog.dismiss()
+                } else {
+                    amountEditText.error = "Please enter a valid amount"
                 }
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
+        
+        dialog.show()
     }
 }

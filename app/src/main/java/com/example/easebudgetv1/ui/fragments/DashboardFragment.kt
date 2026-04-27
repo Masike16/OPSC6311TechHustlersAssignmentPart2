@@ -1,3 +1,10 @@
+/**
+ * Group: Tech Hustlers
+ * Members:
+ * - ST10451774 - Acazia Ammon
+ * - ST10452404 - Masike Jr Rasenyalo
+ * - ST10452409 - Liyema Masala
+ */
 package com.example.easebudgetv1.ui.fragments
 
 import android.os.Bundle
@@ -22,6 +29,7 @@ import com.example.easebudgetv1.viewmodel.BudgetViewModel
 import com.example.easebudgetv1.viewmodel.BudgetViewModelFactory
 import com.example.easebudgetv1.viewmodel.TransactionViewModel
 import com.example.easebudgetv1.viewmodel.TransactionViewModelFactory
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 // (Author, 2024) Dashboard fragment showing budget overview and recent transactions
 class DashboardFragment : Fragment() {
@@ -154,7 +162,8 @@ class DashboardFragment : Fragment() {
     
     private fun setupClickListeners() {
         seeAllTransactions.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardFragment_to_transactionsFragment)
+            // Update bottom navigation state manually to highlight Transactions tab
+            activity?.findViewById<BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.navigation_transactions
         }
     }
     
