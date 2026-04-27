@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary_navy">#1A2B4C</color>
+    <color name="accent_teal">#2D9CDB</color>
+    <color name="warning_coral">#FF6B6B</color>
+    <color name="off_white">#F8F9FA</color>
+    
+    <!-- Light Variants -->
+    <color name="accent_teal_light">#E3F2FD</color>
+    <color name="warning_coral_light">#FFEBEE</color>
+    <color name="primary_navy_light">#E8EAF6</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+    
+    <!-- Status Colors -->
+    <color name="success_green">#4CAF50</color>
+    <color name="error_red">#F44336</color>
+    <color name="info_blue">#2196F3</color>
+    
+    <!-- Bottom Navigation -->
+    <color name="bottom_nav_color">#1A2B4C</color>
+    
+    <!-- Standard Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+</resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_dashboard">
+
+    <!-- Main Navigation Fragments -->
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.example.easebudgetv1.ui.fragments.DashboardFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/navigation_transactions"
+        android:name="com.example.easebudgetv1.ui.fragments.TransactionsFragment"
+        android:label="@string/transactions"
+        tools:layout="@layout/fragment_transactions" />
+
+    <fragment
+        android:id="@+id/navigation_budget"
+        android:name="com.example.easebudgetv1.ui.fragments.BudgetFragment"
+        android:label="@string/budget"
+        tools:layout="@layout/fragment_budget" />
+
+    <fragment
+        android:id="@+id/navigation_reports"
+        android:name="com.example.easebudgetv1.ui.fragments.ReportsFragment"
+        android:label="@string/reports"
+        tools:layout="@layout/fragment_reports" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.example.easebudgetv1.ui.fragments.SettingsFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <!-- Global Actions -->
+    <action
+        android:id="@+id/action_global_addEditTransactionFragment"
+        app:destination="@id/addEditTransactionFragment" />
+
+    <!-- Dialog Fragment -->
+    <fragment
+        android:id="@+id/addEditTransactionFragment"
+        android:name="com.example.easebudgetv1.ui.fragments.AddEditTransactionFragment"
+        android:label="Add Transaction"
+        tools:layout="@layout/dialog_add_edit_transaction">
+        <argument
+            android:name="transactionId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+
+    <!-- Fragment to Fragment Navigation -->
+    <action
+        android:id="@+id/action_dashboardFragment_to_transactionsFragment"
+        app:destination="@id/navigation_transactions" />
+
+</navigation>
