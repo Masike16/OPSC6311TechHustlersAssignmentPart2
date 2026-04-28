@@ -1,4 +1,6 @@
 # EasEBudgetV1
+Youtube video presentation link:
+https://youtu.be/Zc7mj2An0C0
 
 EasEBudget is a comprehensive personal finance management application designed to help users track their spending, manage budgets, and visualize their financial health. Built specifically with the South African market in mind, it defaults to South African Rands (ZAR) and provides a user-friendly interface for daily financial tracking.
 
@@ -12,12 +14,12 @@ EasEBudget is a comprehensive personal finance management application designed t
 
 ## Features
 
-### 🔐 Secure Authentication
+### Secure Authentication
 *   User registration and login system.
 *   Session management that keeps you logged in securely.
 *   Account deletion and profile update options.
 
-### 💰 Transaction Management
+### Transaction Management
 *   Track both **Income** and **Expenses**.
 *   Categorize transactions for better organization.
 *   **Time Tracking**: Record both **Start Time** and **End Time** for precise transaction logging.
@@ -25,19 +27,19 @@ EasEBudget is a comprehensive personal finance management application designed t
 *   **Quick Adjust**: Features a "Quick Adjust Amount" seekbar for faster value entry.
 *   **Receipt Attachments**: Capture photos of receipts using the camera or select from the gallery to keep a digital record.
 
-### 📊 Budgeting & Limits
+### Budgeting & Limits
 *   Set overall monthly budget goals.
 *   Define specific spending limits for individual categories (e.g., Food, Transport).
 *   Visual progress bars to show how much of your budget remains.
 *   "Ready to Assign" calculation to help you plan your spending.
 
-### 📈 Reports & Analytics
+### Reports & Analytics
 *   Interactive **Pie Charts** showing spending distribution by category.
 *   Filter reports by Today, This Week, or This Month.
 *   Summary cards for Total Income, Total Expenses, and Current Balance.
 *   Top spending categories highlight.
 
-### 🛠️ Key Utilities
+### Key Utilities
 *   **ZAR Support**: Localized formatting for South African Rands.
 *   **Help Tooltips**: Onboarding system with helpful tips for new users.
 *   **Persistent Storage**: All data is saved locally using Room Database (Version 2).
