@@ -27,5 +27,7 @@ data class BudgetGoal(
     val month: Int,
     val year: Int,
     val monthlyTotalBudget: Double,
+    val minSpendingGoal: Double = 0.0, // Added to meet requirement
+    val maxSpendingGoal: Double = 0.0, // Added to meet requirement
     val savingsGoal: Double
 )

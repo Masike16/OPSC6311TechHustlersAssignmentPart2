@@ -16,7 +16,7 @@ import com.example.easebudgetv1.data.database.entities.*
         Transaction::class,
         BudgetGoal::class
     ],
-    version = 1,
+    version = 2, // Bumped version due to Transaction entity changes
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -36,7 +36,9 @@ abstract class EaseBudgetDatabase : RoomDatabase() {
                     context.applicationContext,
                     EaseBudgetDatabase::class.java,
                     "easebudget_database"
-                ).build()
+                )
+                .fallbackToDestructiveMigration() // Handle schema changes during development
+                .build()
                 INSTANCE = instance
                 instance
             }

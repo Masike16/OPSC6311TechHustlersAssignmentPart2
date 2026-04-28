@@ -116,13 +116,13 @@ class AuthViewModel(
         val currentCategories = repository.getUserCategories(userId).first()
         if (currentCategories.isEmpty()) {
             val defaultCategories = listOf(
-                Category(userId = userId, name = "Food \u0026 Dining", iconResId = R.drawable.ic_budget, colorHex = "#FF9800", isDefault = true),
-                Category(userId = userId, name = "Transportation", iconResId = R.drawable.ic_budget, colorHex = "#2196F3", isDefault = true),
-                Category(userId = userId, name = "Shopping", iconResId = R.drawable.ic_budget, colorHex = "#E91E63", isDefault = true),
-                Category(userId = userId, name = "Entertainment", iconResId = R.drawable.ic_budget, colorHex = "#9C27B0", isDefault = true),
-                Category(userId = userId, name = "Health", iconResId = R.drawable.ic_budget, colorHex = "#4CAF50", isDefault = true),
-                Category(userId = userId, name = "Utilities", iconResId = R.drawable.ic_budget, colorHex = "#607D8B", isDefault = true),
-                Category(userId = userId, name = "Income", iconResId = R.drawable.ic_budget, colorHex = "#009688", isDefault = true)
+                Category(userId = userId, name = "Food & Dining", iconResId = R.drawable.ic_food_dining, colorHex = "#FF9800", isDefault = true),
+                Category(userId = userId, name = "Transportation", iconResId = R.drawable.ic_transportation, colorHex = "#2196F3", isDefault = true),
+                Category(userId = userId, name = "Shopping", iconResId = R.drawable.ic_shopping, colorHex = "#E91E63", isDefault = true),
+                Category(userId = userId, name = "Entertainment", iconResId = R.drawable.ic_entertainment, colorHex = "#9C27B0", isDefault = true),
+                Category(userId = userId, name = "Health", iconResId = R.drawable.ic_health, colorHex = "#4CAF50", isDefault = true),
+                Category(userId = userId, name = "Utilities", iconResId = R.drawable.ic_utilities, colorHex = "#607D8B", isDefault = true),
+                Category(userId = userId, name = "Income", iconResId = R.drawable.ic_income, colorHex = "#009688", isDefault = true)
             )
             repository.insertCategories(defaultCategories)
         }

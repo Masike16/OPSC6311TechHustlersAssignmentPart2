@@ -8,4 +8,8 @@ object HashUtils {
         val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }
     }
+    
+    fun verifyPassword(input: String, hashedPassword: String): Boolean {
+        return sha256(input) == hashedPassword
+    }
 }

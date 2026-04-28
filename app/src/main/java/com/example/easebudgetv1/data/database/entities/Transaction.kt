@@ -35,6 +35,8 @@ data class Transaction(
     val categoryId: Long?,
     val amount: Double,
     val date: Long,
+    val startTime: String? = null, // Added to meet requirement
+    val endTime: String? = null,   // Added to meet requirement
     val description: String,
     val receiptPath: String? = null,
     val type: TransactionType

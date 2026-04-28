@@ -8,8 +8,10 @@
 package com.example.easebudgetv1.ui.fragments
 
 import android.app.DatePickerDialog
-import android.os.Build
+import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,9 +47,12 @@ class AddEditTransactionFragment : DialogFragment() {
     private lateinit var expenseRadioButton: RadioButton
     private lateinit var incomeRadioButton: RadioButton
     private lateinit var amountEditText: TextInputEditText
+    private lateinit var amountSeekBar: SeekBar
     private lateinit var descriptionEditText: TextInputEditText
     private lateinit var categorySpinner: Spinner
     private lateinit var dateEditText: TextInputEditText
+    private lateinit var startTimeEditText: TextInputEditText
+    private lateinit var endTimeEditText: TextInputEditText
     private lateinit var receiptImageView: ImageView
     private lateinit var cameraButton: Button
     private lateinit var galleryButton: Button
@@ -143,6 +148,7 @@ class AddEditTransactionFragment : DialogFragment() {
         setupSpinner()
         setupObservers()
         setupClickListeners()
+        setupSeekBar()
         
         if (transactionId > 0) {
             loadTransactionData()
@@ -156,14 +162,40 @@ class AddEditTransactionFragment : DialogFragment() {
         expenseRadioButton = view.findViewById(R.id.expenseRadioButton)
         incomeRadioButton = view.findViewById(R.id.incomeRadioButton)
         amountEditText = view.findViewById(R.id.amountEditText)
+        amountSeekBar = view.findViewById(R.id.amountSeekBar)
         descriptionEditText = view.findViewById(R.id.descriptionEditText)
         categorySpinner = view.findViewById(R.id.categorySpinner)
         dateEditText = view.findViewById(R.id.dateEditText)
+        startTimeEditText = view.findViewById(R.id.startTimeEditText)
+        endTimeEditText = view.findViewById(R.id.endTimeEditText)
         receiptImageView = view.findViewById(R.id.receiptImageView)
         cameraButton = view.findViewById(R.id.cameraButton)
         galleryButton = view.findViewById(R.id.galleryButton)
         cancelButton = view.findViewById(R.id.cancelButton)
         saveButton = view.findViewById(R.id.saveButton)
+    }
+
+    private fun setupSeekBar() {
+        amountSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    amountEditText.setText(progress.toString())
+                }
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        amountEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val value = s.toString().toIntOrNull() ?: 0
+                if (value <= amountSeekBar.max) {
+                    amountSeekBar.progress = value
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
     }
     
     private fun setupToolbar() {
@@ -205,6 +237,14 @@ class AddEditTransactionFragment : DialogFragment() {
         dateEditText.setOnClickListener {
             showDatePicker()
         }
+
+        startTimeEditText.setOnClickListener {
+            showTimePicker(startTimeEditText)
+        }
+
+        endTimeEditText.setOnClickListener {
+            showTimePicker(endTimeEditText)
+        }
         
         cameraButton.setOnClickListener {
             checkCameraPermission()
@@ -226,6 +266,11 @@ class AddEditTransactionFragment : DialogFragment() {
     private fun setupDefaults() {
         expenseRadioButton.isChecked = true
         dateEditText.setText(DateUtils.formatDate(selectedDate))
+        
+        val now = Calendar.getInstance()
+        val timeStr = String.format(Locale.getDefault(), "%02d:%02d", now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE))
+        startTimeEditText.setText(timeStr)
+        endTimeEditText.setText(timeStr)
     }
     
     private fun loadTransactionData() {
@@ -240,6 +285,8 @@ class AddEditTransactionFragment : DialogFragment() {
                 descriptionEditText.setText(it.description)
                 selectedDate = it.date
                 dateEditText.setText(DateUtils.formatDate(selectedDate))
+                startTimeEditText.setText(it.startTime ?: "")
+                endTimeEditText.setText(it.endTime ?: "")
                 receiptPath = it.receiptPath
                 loadReceiptImage()
                 
@@ -274,6 +321,24 @@ class AddEditTransactionFragment : DialogFragment() {
         )
         
         datePickerDialog.show()
+    }
+
+    private fun showTimePicker(targetEditText: TextInputEditText) {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            { _, selectedHour, selectedMinute ->
+                val timeStr = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)
+                targetEditText.setText(timeStr)
+            },
+            hour,
+            minute,
+            true
+        )
+        timePickerDialog.show()
     }
     
     private fun checkCameraPermission() {
@@ -326,13 +391,15 @@ class AddEditTransactionFragment : DialogFragment() {
     private fun saveTransaction() {
         val amountStr = amountEditText.text?.toString()
         val description = descriptionEditText.text?.toString()?.trim()
+        val startTime = startTimeEditText.text?.toString()
+        val endTime = endTimeEditText.text?.toString()
         
         if (amountStr.isNullOrEmpty() || description.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Please fill all required fields", Toast.LENGTH_SHORT).show()
             return
         }
         
-        val amount = try { amountStr.toDouble() } catch(e: Exception) { 0.0 }
+        val amount = try { amountStr.toDouble() } catch(_: Exception) { 0.0 }
         if (amount <= 0.0) {
             Toast.makeText(requireContext(), "Please enter a valid amount", Toast.LENGTH_SHORT).show()
             return
@@ -348,6 +415,8 @@ class AddEditTransactionFragment : DialogFragment() {
             categoryId = categoryId,
             amount = amount,
             date = selectedDate,
+            startTime = startTime,
+            endTime = endTime,
             description = description,
             receiptPath = receiptPath,
             type = type
