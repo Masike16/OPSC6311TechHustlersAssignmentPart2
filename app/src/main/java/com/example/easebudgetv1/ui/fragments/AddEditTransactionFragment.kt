@@ -1,6 +1,14 @@
+/**
+ * Group: Tech Hustlers
+ * Members:
+ * - ST10451774 - Acazia Ammon
+ * - ST10452404 - Masike Jr Rasenyalo
+ * - ST10452409 - Liyema Masala
+ */
 package com.example.easebudgetv1.ui.fragments
 
 import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -64,12 +72,13 @@ class AddEditTransactionFragment : DialogFragment() {
     }
     
     private val galleryPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val isGranted = permissions.entries.all { it.value }
         if (isGranted) {
             launchGallery()
         } else {
-            Toast.makeText(requireContext(), "Storage permission required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Storage permission required to access gallery", Toast.LENGTH_SHORT).show()
         }
     }
     
@@ -279,7 +288,7 @@ class AddEditTransactionFragment : DialogFragment() {
         if (PermissionUtils.hasStoragePermissions(requireActivity())) {
             launchGallery()
         } else {
-            galleryPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            galleryPermissionLauncher.launch(PermissionUtils.STORAGE_PERMISSIONS)
         }
     }
     

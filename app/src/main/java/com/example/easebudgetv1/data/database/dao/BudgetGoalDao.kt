@@ -13,6 +13,9 @@ interface BudgetGoalDao {
     @Query("SELECT * FROM budget_goals WHERE userId = :userId AND year = :year AND month = :month LIMIT 1")
     suspend fun findByMonthYear(userId: Long, year: Int, month: Int): BudgetGoal?
 
+    @Query("SELECT * FROM budget_goals WHERE userId = :userId AND year = :year AND month = :month LIMIT 1")
+    fun findByMonthYearFlow(userId: Long, year: Int, month: Int): Flow<BudgetGoal?>
+
     @Query("SELECT * FROM budget_goals WHERE id = :budgetId LIMIT 1")
     suspend fun findById(budgetId: Long): BudgetGoal?
 

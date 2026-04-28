@@ -1,7 +1,6 @@
 package com.example.easebudgetv1.data.repository
 
 import androidx.annotation.WorkerThread
-import com.example.easebudgetv1.data.database.*
 import com.example.easebudgetv1.data.database.dao.*
 import com.example.easebudgetv1.data.database.entities.*
 import kotlinx.coroutines.flow.Flow
@@ -83,6 +82,15 @@ class EaseBudgetRepository(
     @WorkerThread
     suspend fun getSpendingByCategory(userId: Long, startDate: Long, endDate: Long): List<CategorySpending> =
         transactionDao.getSpendingByCategory(userId, startDate, endDate)
+        
+    fun getSpendingByCategoryFlow(userId: Long, startDate: Long, endDate: Long): Flow<List<CategorySpending>> = kotlinx.coroutines.flow.flow {
+        // Since getSpendingByCategory is a suspend function returning a list, we wrap it.
+        // In a real reactive app, TransactionDao would return Flow<List<CategorySpending>> directly.
+        // But we can approximate it by reacting to any transaction changes.
+        transactionDao.getUserTransactions(userId).collect {
+            emit(transactionDao.getSpendingByCategory(userId, startDate, endDate))
+        }
+    }
 
     @WorkerThread
     suspend fun getTransactionById(transactionId: Long): Transaction? = transactionDao.findById(transactionId)
@@ -108,6 +116,9 @@ class EaseBudgetRepository(
     @WorkerThread
     suspend fun getBudgetGoalByMonthYear(userId: Long, year: Int, month: Int): BudgetGoal? =
         budgetGoalDao.findByMonthYear(userId, year, month)
+        
+    fun getBudgetGoalByMonthYearFlow(userId: Long, year: Int, month: Int): Flow<BudgetGoal?> =
+        budgetGoalDao.findByMonthYearFlow(userId, year, month)
 
     @WorkerThread
     suspend fun getBudgetGoalById(budgetId: Long): BudgetGoal? = budgetGoalDao.findById(budgetId)
@@ -163,6 +174,18 @@ class EaseBudgetRepository(
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val startOfMonth = calendar.timeInMillis
+        
+        calendar.add(Calendar.MONTH, 1)
+        val endOfMonth = calendar.timeInMillis
+        
+        return Pair(startOfMonth, endOfMonth)
+    }
+    
+    fun getMonthRange(year: Int, month: Int): Pair<Long, Long> {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, 1, 0, 0, 0)
         calendar.set(Calendar.MILLISECOND, 0)
         val startOfMonth = calendar.timeInMillis
         

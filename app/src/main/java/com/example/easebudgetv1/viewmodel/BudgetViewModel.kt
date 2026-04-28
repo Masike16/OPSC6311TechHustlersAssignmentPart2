@@ -1,90 +1,61 @@
+/**
+ * Group: Tech Hustlers
+ * Members:
+ * - ST10451774 - Acazia Ammon
+ * - ST10452404 - Masike Jr Rasenyalo
+ * - ST10452409 - Liyema Masala
+ */
 package com.example.easebudgetv1.viewmodel
 
 import androidx.lifecycle.*
 import com.example.easebudgetv1.data.database.entities.*
 import com.example.easebudgetv1.data.repository.EaseBudgetRepository
-import com.example.easebudgetv1.utils.DateUtils
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
 // (Author, 2024) ViewModel for budget management operations
+@OptIn(ExperimentalCoroutinesApi::class)
 class BudgetViewModel(
     private val repository: EaseBudgetRepository,
     private val currentUserId: Long
 ) : ViewModel() {
 
     private val _currentMonth = MutableStateFlow(Pair(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH)))
-    val currentMonth: StateFlow<Pair<Int, Int>> = _currentMonth
+    val currentMonth: StateFlow<Pair<Int, Int>> = _currentMonth.asStateFlow()
 
-    val categories = repository.getUserCategories(currentUserId).asLiveData()
-
-    private val _budgetGoal = MutableLiveData<BudgetGoal?>()
-    val budgetGoal: LiveData<BudgetGoal?> = _budgetGoal
-
-    private val _budgetState = MutableLiveData<BudgetState>()
+    private val _budgetState = MutableLiveData<BudgetState>(BudgetState.Idle)
     val budgetState: LiveData<BudgetState> = _budgetState
 
-    private val _readyToAssign = MutableLiveData<Double>()
-    val readyToAssign: LiveData<Double> = _readyToAssign
+    // Reactive Categories
+    val categories: LiveData<List<Category>> = repository.getUserCategories(currentUserId).asLiveData()
 
-    private val _categorySpending = MutableLiveData<List<CategorySpendingWithInfo>>()
-    val categorySpending: LiveData<List<CategorySpendingWithInfo>> = _categorySpending
+    // Reactive Budget Goal based on current month
+    val budgetGoal: LiveData<BudgetGoal?> = _currentMonth.flatMapLatest { (year, month) ->
+        repository.getBudgetGoalByMonthYearFlow(currentUserId, year, month)
+    }.asLiveData()
 
-    init {
-        loadCurrentBudget()
-    }
-
-    private fun loadCurrentBudget() {
-        viewModelScope.launch {
-            try {
-                val (year, month) = _currentMonth.value
-                val budget = repository.getBudgetGoalByMonthYear(currentUserId, year, month)
-                _budgetGoal.value = budget
-                
-                if (budget != null) {
-                    calculateReadyToAssign(budget)
-                    loadCategorySpending(year, month)
-                } else {
-                    _readyToAssign.value = 0.0
-                    _categorySpending.value = emptyList()
-                }
-            } catch (e: Exception) {
-                _budgetState.value = BudgetState.Error("Failed to load budget: ${e.message}")
-            }
-        }
-    }
-
-    private fun calculateReadyToAssign(budget: BudgetGoal) {
-        viewModelScope.launch {
-            try {
-                val categoryList = repository.getUserCategories(currentUserId).first()
+    // Reactive Ready to Assign - updates whenever budget goal or categories change
+    val readyToAssign: LiveData<Double> = budgetGoal.asFlow().flatMapLatest { budget ->
+        repository.getUserCategories(currentUserId).map { categoryList ->
+            if (budget == null) 0.0
+            else {
                 val categoryLimits = categoryList.filter { it.monthlyLimit > 0 }.sumOf { it.monthlyLimit }
-                
-                _readyToAssign.value = budget.monthlyTotalBudget - categoryLimits
-            } catch (e: Exception) {
-                _readyToAssign.value = 0.0
+                budget.monthlyTotalBudget - categoryLimits
             }
         }
-    }
+    }.asLiveData()
 
-    private suspend fun loadCategorySpending(year: Int, month: Int) {
-        try {
-            val calendar = Calendar.getInstance()
-            calendar.set(year, month, 1, 0, 0, 0)
-            calendar.set(Calendar.MILLISECOND, 0)
-            val startDate = calendar.timeInMillis
-            
-            calendar.add(Calendar.MONTH, 1)
-            val endDate = calendar.timeInMillis
-            
-            val spendingList = repository.getSpendingByCategory(currentUserId, startDate, endDate)
-            val categoryList = repository.getUserCategories(currentUserId).first()
-            
-            val spendingWithInfo = categoryList.filter { it.monthlyLimit > 0 }.map { category ->
+    // Reactive Category Spending with Info
+    val categorySpending: LiveData<List<CategorySpendingWithInfo>> = _currentMonth.flatMapLatest { (year, month) ->
+        val (startDate, endDate) = repository.getMonthRange(year, month)
+        
+        combine(
+            repository.getSpendingByCategoryFlow(currentUserId, startDate, endDate),
+            repository.getUserCategories(currentUserId)
+        ) { spendingList, categoryList ->
+            categoryList.filter { it.monthlyLimit > 0 }.map { category ->
                 val spending = spendingList.find { it.categoryId == category.id }
                 val spent = spending?.total ?: 0.0
                 CategorySpendingWithInfo(
@@ -94,12 +65,8 @@ class BudgetViewModel(
                     percentage = if (category.monthlyLimit > 0) (spent / category.monthlyLimit * 100).coerceAtMost(100.0) else 0.0
                 )
             }
-            
-            _categorySpending.postValue(spendingWithInfo)
-        } catch (e: Exception) {
-            _categorySpending.postValue(emptyList())
         }
-    }
+    }.asLiveData()
 
     fun createOrUpdateBudgetGoal(
         monthlyTotalBudget: Double,
@@ -109,11 +76,6 @@ class BudgetViewModel(
     ) {
         if (monthlyTotalBudget <= 0.0) {
             _budgetState.value = BudgetState.Error("Monthly budget must be greater than 0")
-            return
-        }
-
-        if (savingsGoal < 0.0) {
-            _budgetState.value = BudgetState.Error("Savings goal cannot be negative")
             return
         }
 
@@ -143,9 +105,6 @@ class BudgetViewModel(
                     repository.insertBudgetGoal(budgetGoal)
                 }
                 
-                _budgetGoal.value = budgetGoal
-                calculateReadyToAssign(budgetGoal)
-                loadCategorySpending(year, month)
                 _budgetState.value = BudgetState.Success("Budget goal updated successfully")
             } catch (e: Exception) {
                 _budgetState.value = BudgetState.Error("Failed to save budget goal: ${e.message}")
@@ -165,13 +124,6 @@ class BudgetViewModel(
                 if (category != null && category.userId == currentUserId) {
                     val updatedCategory = category.copy(monthlyLimit = monthlyLimit)
                     repository.updateCategory(updatedCategory)
-                    
-                    val budget = _budgetGoal.value
-                    if (budget != null) {
-                        calculateReadyToAssign(budget)
-                        loadCategorySpending(budget.year, budget.month)
-                    }
-                    
                     _budgetState.value = BudgetState.Success("Category limit updated successfully")
                 } else {
                     _budgetState.value = BudgetState.Error("Category not found")
@@ -184,19 +136,6 @@ class BudgetViewModel(
 
     fun setCurrentMonth(year: Int, month: Int) {
         _currentMonth.value = Pair(year, month)
-        loadCurrentBudget()
-    }
-
-    fun getCurrentMonthBudget(): LiveData<Double> = liveData {
-        val (year, month) = _currentMonth.value
-        val budget = repository.getBudgetGoalByMonthYear(currentUserId, year, month)
-        emit(budget?.monthlyTotalBudget ?: 0.0)
-    }
-
-    fun getCurrentMonthSavingsGoal(): LiveData<Double> = liveData {
-        val (year, month) = _currentMonth.value
-        val budget = repository.getBudgetGoalByMonthYear(currentUserId, year, month)
-        emit(budget?.savingsGoal ?: 0.0)
     }
 
     fun resetBudgetState() {
