@@ -1,10 +1,12 @@
-/**
- * Group: Tech Hustlers
- * Members:
+/*
+ * EasEBudget - Personal Finance Management App
+ * 
+ * Developed by Tech Hustlers Group:
  * - ST10451774 - Acazia Ammon
- * - ST10452404 - Masike Jr Rasenyalo
+ * - ST10452404 - Masike Jr Rasenyalo  
  * - ST10452409 - Liyema Masala
  */
+
 package com.example.easebudgetv1.ui.activities
 
 import android.content.Intent
@@ -19,8 +21,15 @@ import com.example.easebudgetv1.databinding.ActivityMainBinding
 import com.example.easebudgetv1.utils.HelpOverlayManager
 import com.example.easebudgetv1.utils.SessionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-// (Author, 2024) Main activity with bottom navigation and fragment container
+/**
+ * Main activity implementing bottom navigation architecture.
+ * This activity
+ * serves as the primary container for all app screens after
+ * successful authentication.
+ * @authors Tech Hustlers Group
+ */
 class MainActivity : AppCompatActivity() {
     
     private lateinit var binding: ActivityMainBinding
@@ -92,14 +101,14 @@ class MainActivity : AppCompatActivity() {
     private fun showHelpIfNeeded() {
         helpOverlayManager.showHelpIfNeeded()
     }
-    
+    // Navigates to the login activity if the user is not logged in.
     private fun navigateToLogin() {
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
-    
+    // Handles the up navigation action.
     override fun onSupportNavigateUp(): Boolean {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment

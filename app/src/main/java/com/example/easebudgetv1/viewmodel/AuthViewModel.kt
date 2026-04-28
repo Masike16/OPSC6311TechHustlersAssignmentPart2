@@ -16,7 +16,17 @@ import com.example.easebudgetv1.utils.SessionManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-// (Author, 2024) ViewModel for user authentication operations
+/**
+ * ViewModel managing user authentication state and operations.
+ * 
+ * Implements MVVM architecture pattern as recommended by Android
+ * documentation (Android Developers, 2021). This ViewModel
+ * handles authentication logic, input validation, and state management
+ * while maintaining separation from UI layer.
+ * 
+ * @author Tech Hustlers Group
+ * @version 1.0
+ */
 class AuthViewModel(
     private val repository: EaseBudgetRepository,
     private val sessionManager: SessionManager
@@ -35,6 +45,14 @@ class AuthViewModel(
         checkLoginStatus()
     }
 
+    /**
+     * Checks for existing user session on ViewModel initialization.
+     * 
+     * Implements automatic authentication restoration following
+     * Android session management best practices (Android Developers, 2022).
+     * This provides seamless user experience by maintaining login state
+     * across application restarts.
+     */
     private fun checkLoginStatus() {
         if (sessionManager.isLoggedIn()) {
             val userId = sessionManager.getUserId()
@@ -53,6 +71,15 @@ class AuthViewModel(
         }
     }
 
+    /**
+     * Authenticates user with provided credentials.
+     * 
+     * Implements secure authentication flow with input validation,
+     * credential verification, and session management (Srinivasan, 2018).
+     * 
+     * @param username User's login identifier
+     * @param password User's password for verification
+     */
     fun login(username: String, password: String) {
         if (username.isBlank() || password.isBlank()) {
             _loginState.value = LoginState.Error("Username and password cannot be empty")

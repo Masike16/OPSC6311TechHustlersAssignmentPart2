@@ -6,7 +6,7 @@ import com.example.easebudgetv1.data.database.entities.*
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 
-// (Author, 2024) Repository for EasEBudget data operations
+// Repository for EasEBudget data operations
 class EaseBudgetRepository(
     private val userDao: UserDao,
     private val categoryDao: CategoryDao,

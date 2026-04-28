@@ -20,7 +20,9 @@ EasEBudget is a comprehensive personal finance management application designed t
 ### 💰 Transaction Management
 *   Track both **Income** and **Expenses**.
 *   Categorize transactions for better organization.
+*   **Time Tracking**: Record both **Start Time** and **End Time** for precise transaction logging.
 *   Add descriptions and select dates for every entry.
+*   **Quick Adjust**: Features a "Quick Adjust Amount" seekbar for faster value entry.
 *   **Receipt Attachments**: Capture photos of receipts using the camera or select from the gallery to keep a digital record.
 
 ### 📊 Budgeting & Limits
@@ -38,7 +40,8 @@ EasEBudget is a comprehensive personal finance management application designed t
 ### 🛠️ Key Utilities
 *   **ZAR Support**: Localized formatting for South African Rands.
 *   **Help Tooltips**: Onboarding system with helpful tips for new users.
-*   **Persistent Storage**: All data is saved locally using Room Database, meaning your data stays on your device.
+*   **Persistent Storage**: All data is saved locally using Room Database (Version 2).
+*   **Portable Design**: Project-relative paths and Gradle dependency management ensure the app can be easily built and run on any workstation.
 
 ---
 
@@ -46,7 +49,7 @@ EasEBudget is a comprehensive personal finance management application designed t
 
 *   **Language**: Kotlin
 *   **UI Architecture**: MVVM (Model-View-ViewModel)
-*   **Database**: Room (SQLite)
+*   **Database**: Room (SQLite) with schema migration support
 *   **Navigation**: Android Jetpack Navigation Component
 *   **Image Loading**: Glide
 *   **Charts**: MPAndroidChart
@@ -59,9 +62,7 @@ EasEBudget is a comprehensive personal finance management application designed t
 
 1.  Clone the repository.
 2.  Open the project in **Android Studio (Hedgehog or newer)**.
-3.  Sync Gradle files.
-4.  Run the application on an emulator or physical Android device (API 26+).
+3.  Wait for **Gradle Sync** to finish downloading dependencies.
+4.  Run the application on an emulator or physical Android device (**API 26+**).
 
 ---
-
-*(Author, 2024 - Tech Hustlers)*

@@ -5,7 +5,17 @@ import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
 import androidx.room.Index
 
-// (Author, 2024) Transaction entity for financial transactions
+/**
+ * Transaction entity representing financial transactions in the budget system.
+ * 
+ * Following relational database design principles (Elmasri & Navathe, 2016),
+ * this entity maintains referential integrity through foreign key relationships
+ * with Users and Categories. Transactions support both income and expense
+ * tracking with optional receipt attachments for expense verification.
+ * 
+ * @author Tech Hustlers Group
+ * @version 1.0
+ */
 @Entity(
     tableName = "transactions",
     foreignKeys = [
@@ -35,13 +45,20 @@ data class Transaction(
     val categoryId: Long?,
     val amount: Double,
     val date: Long,
-    val startTime: String? = null, // Added to meet requirement
-    val endTime: String? = null,   // Added to meet requirement
+    val startTime: String? = null, // Meeting assignment requirement for time tracking
+    val endTime: String? = null,   // Meeting assignment requirement for time tracking
     val description: String,
     val receiptPath: String? = null,
     val type: TransactionType
 )
 
+/**
+ * Enumeration defining transaction types for budget categorization.
+ * 
+ * Supports dual-entry accounting principles where expenses reduce available
+ * funds while income increases them (Kieso et al., 2019). This enables
+ * comprehensive budget tracking and financial analysis.
+ */
 enum class TransactionType {
     INCOME,
     EXPENSE
