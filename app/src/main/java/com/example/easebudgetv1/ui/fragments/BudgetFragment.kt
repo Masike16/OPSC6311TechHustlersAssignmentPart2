@@ -9,8 +9,6 @@ package com.example.easebudgetv1.ui.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +28,7 @@ import com.example.easebudgetv1.utils.SessionManager
 import com.example.easebudgetv1.viewmodel.BudgetViewModel
 import com.example.easebudgetv1.viewmodel.BudgetViewModelFactory
 import com.google.android.material.textfield.TextInputEditText
+import java.util.Locale
 
 // (Author, 2024) Budget fragment for managing monthly budgets and category limits
 class BudgetFragment : Fragment() {
@@ -113,11 +112,11 @@ class BudgetFragment : Fragment() {
         budgetViewModel.budgetGoal.observe(viewLifecycleOwner, Observer { budgetGoal ->
             if (budgetGoal != null) {
                 monthlyBudgetAmount.text = CurrencyUtils.formatCurrency(budgetGoal.monthlyTotalBudget)
-                monthlyBudgetSubtitle.text = "For ${DateUtils.getMonthName(budgetGoal.month)} ${budgetGoal.year}"
+                monthlyBudgetSubtitle.text = getString(R.string.budget_for_month_year, DateUtils.getMonthName(budgetGoal.month), budgetGoal.year)
                 totalBudgetAmount.text = CurrencyUtils.formatCurrency(budgetGoal.monthlyTotalBudget)
             } else {
                 monthlyBudgetAmount.text = CurrencyUtils.formatCurrency(0.0)
-                monthlyBudgetSubtitle.text = "No budget set"
+                monthlyBudgetSubtitle.text = getString(R.string.no_budget_set)
                 totalBudgetAmount.text = CurrencyUtils.formatCurrency(0.0)
             }
         })
@@ -178,18 +177,18 @@ class BudgetFragment : Fragment() {
         val titleEditText = dialogView.findViewById<TextInputEditText>(R.id.titleEditText)
         val amountEditText = dialogView.findViewById<TextInputEditText>(R.id.amountEditText)
         
-        titleEditText.setText("Monthly Budget")
+        titleEditText.setText(R.string.monthly_budget)
         titleEditText.isEnabled = false
         
         // Set current budget amount - format it cleanly for editing
         val currentBudget = budgetViewModel.budgetGoal.value?.monthlyTotalBudget ?: 0.0
-        amountEditText.setText(if(currentBudget > 0) String.format("%.2f", currentBudget) else "")
+        amountEditText.setText(if(currentBudget > 0) String.format(Locale.US, "%.2f", currentBudget) else "")
         
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Edit Monthly Budget")
+            .setTitle(R.string.edit_monthly_budget)
             .setView(dialogView)
-            .setPositiveButton("Save", null) // Set to null to override later
-            .setNegativeButton("Cancel", null)
+            .setPositiveButton(R.string.save, null) // Set to null to override later
+            .setNegativeButton(R.string.cancel, null)
             .create()
 
         dialog.setOnShowListener {
@@ -205,7 +204,7 @@ class BudgetFragment : Fragment() {
                     )
                     dialog.dismiss()
                 } else {
-                    amountEditText.error = "Please enter a valid amount"
+                    amountEditText.error = getString(R.string.error_invalid_amount)
                 }
             }
         }
@@ -218,14 +217,14 @@ class BudgetFragment : Fragment() {
         val titleEditText = dialogView.findViewById<TextInputEditText>(R.id.titleEditText)
         val amountEditText = dialogView.findViewById<TextInputEditText>(R.id.amountEditText)
         
-        titleEditText.setText("Category Limit")
+        titleEditText.setText(R.string.category_limit)
         titleEditText.isEnabled = false
         
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Add Category Limit")
+            .setTitle(R.string.add_category_limit)
             .setView(dialogView)
-            .setPositiveButton("Save", null)
-            .setNegativeButton("Cancel", null)
+            .setPositiveButton(R.string.save, null)
+            .setNegativeButton(R.string.cancel, null)
             .create()
 
         dialog.setOnShowListener {
@@ -238,7 +237,7 @@ class BudgetFragment : Fragment() {
                     dialog.dismiss()
                     showCategorySelectionDialog(amountStr)
                 } else {
-                    amountEditText.error = "Please enter a valid amount"
+                    amountEditText.error = getString(R.string.error_invalid_amount)
                 }
             }
         }
@@ -251,7 +250,7 @@ class BudgetFragment : Fragment() {
         val categoryNames = categories.map { it.name }.toTypedArray()
         
         AlertDialog.Builder(requireContext())
-            .setTitle("Select Category")
+            .setTitle(R.string.select_category)
             .setItems(categoryNames) { _, which ->
                 val selectedCategory = categories[which]
                 val amount = amountStr?.toDoubleOrNull() ?: 0.0
@@ -270,13 +269,13 @@ class BudgetFragment : Fragment() {
         
         titleEditText.setText(category.name)
         titleEditText.isEnabled = false
-        amountEditText.setText(if(category.monthlyLimit > 0) String.format("%.2f", category.monthlyLimit) else "")
+        amountEditText.setText(if(category.monthlyLimit > 0) String.format(Locale.US, "%.2f", category.monthlyLimit) else "")
         
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Edit Category Limit")
+            .setTitle(R.string.edit_category_limit)
             .setView(dialogView)
-            .setPositiveButton("Save", null)
-            .setNegativeButton("Cancel", null)
+            .setPositiveButton(R.string.save, null)
+            .setNegativeButton(R.string.cancel, null)
             .create()
 
         dialog.setOnShowListener {
@@ -289,7 +288,7 @@ class BudgetFragment : Fragment() {
                     budgetViewModel.updateCategoryLimit(category.id, amount)
                     dialog.dismiss()
                 } else {
-                    amountEditText.error = "Please enter a valid amount"
+                    amountEditText.error = getString(R.string.error_invalid_amount)
                 }
             }
         }

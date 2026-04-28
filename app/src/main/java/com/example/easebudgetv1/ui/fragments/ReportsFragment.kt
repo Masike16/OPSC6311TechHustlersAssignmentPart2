@@ -1,3 +1,10 @@
+/**
+ * Group: Tech Hustlers
+ * Members:
+ * - ST10451774 - Acazia Ammon
+ * - ST10452404 - Masike Jr Rasenyalo
+ * - ST10452409 - Liyema Masala
+ */
 package com.example.easebudgetv1.ui.fragments
 
 import android.os.Bundle
@@ -144,21 +151,21 @@ class ReportsFragment : Fragment() {
     
     private fun setupObservers() {
         // Observe income, expenses, and balance
-        reportsViewModel.totalIncome.observe(viewLifecycleOwner, Observer { income ->
+        reportsViewModel.totalIncome.observe(viewLifecycleOwner) { income ->
             reportsIncomeAmount.text = CurrencyUtils.formatCurrency(income)
-        })
+        }
         
-        reportsViewModel.totalExpenses.observe(viewLifecycleOwner, Observer { expenses ->
+        reportsViewModel.totalExpenses.observe(viewLifecycleOwner) { expenses ->
             reportsExpensesAmount.text = CurrencyUtils.formatCurrency(expenses)
-        })
+        }
         
-        reportsViewModel.getCurrentBalance().observe(viewLifecycleOwner, Observer { balance ->
+        reportsViewModel.currentBalance.observe(viewLifecycleOwner) { balance ->
             reportsBalanceAmount.text = CurrencyUtils.formatCurrency(balance)
-        })
+        }
         
         // Observe spending by category
-        reportsViewModel.getSpendingByCategory().observe(viewLifecycleOwner, Observer { spendingData ->
-            if (spendingData.isEmpty()) {
+        reportsViewModel.spendingByCategory.observe(viewLifecycleOwner) { spendingData ->
+            if (spendingData.isNullOrEmpty()) {
                 spendingPieChart.visibility = View.GONE
                 categoryLegendRecyclerView.visibility = View.GONE
                 noSpendingDataTextView.visibility = View.VISIBLE
@@ -170,13 +177,13 @@ class ReportsFragment : Fragment() {
                 updatePieChart(spendingData)
                 categoryReportAdapter.submitList(spendingData)
             }
-        })
+        }
         
         // Observe top categories
-        reportsViewModel.getTopCategories().observe(viewLifecycleOwner, Observer { topCategories ->
+        reportsViewModel.topCategories.observe(viewLifecycleOwner) { topCategories ->
             val adapter = topCategoriesRecyclerView.adapter as CategoryReportAdapter
             adapter.submitList(topCategories)
-        })
+        }
     }
     
     private fun updatePieChart(spendingData: List<com.example.easebudgetv1.viewmodel.CategorySpendingData>) {

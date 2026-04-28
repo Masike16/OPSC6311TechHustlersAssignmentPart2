@@ -28,6 +28,7 @@
     
     <!-- Dashboard -->
     <string name="welcome">Welcome back!</string>
+    <string name="greeting_format">Welcome back, %1$s!</string>
     <string name="ready_to_assign">Ready to Assign</string>
     <string name="monthly_budget_minus_category_limits">Monthly Budget minus Category Limits</string>
     <string name="income">Income</string>
@@ -61,14 +62,21 @@
     
     <!-- Budget -->
     <string name="monthly_budget">Monthly Budget</string>
+    <string name="edit_monthly_budget">Edit Monthly Budget</string>
     <string name="category_limits">Category Limits</string>
+    <string name="category_limit">Category Limit</string>
     <string name="add_category_limit">Add Category Limit</string>
+    <string name="edit_category_limit">Edit Category Limit</string>
+    <string name="select_category">Select Category</string>
     <string name="budget_summary">Budget Summary</string>
     <string name="total_budget">Total Budget</string>
     <string name="category_limits_total">Category Limits Total</string>
     <string name="no_category_limits_set">No category limits set</string>
     <string name="edit">Edit</string>
-    
+    <string name="budget_for_month_year">For %1$s %2$d</string>
+    <string name="no_budget_set">No budget set</string>
+    <string name="error_invalid_amount">Please enter a valid amount</string>
+
     <!-- Reports -->
     <string name="spending_by_category">Spending by Category</string>
     <string name="top_categories">Top Categories</string>

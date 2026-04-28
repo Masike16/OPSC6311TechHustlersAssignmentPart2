@@ -30,6 +30,7 @@ import com.example.easebudgetv1.viewmodel.BudgetViewModelFactory
 import com.example.easebudgetv1.viewmodel.TransactionViewModel
 import com.example.easebudgetv1.viewmodel.TransactionViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.Locale
 
 // (Author, 2024) Dashboard fragment showing budget overview and recent transactions
 class DashboardFragment : Fragment() {
@@ -170,7 +171,7 @@ class DashboardFragment : Fragment() {
     private fun loadDashboardData() {
         // Set greeting
         val username = sessionManager.getUsername() ?: "User"
-        greetingTextView.text = "Welcome back, $username!"
+        greetingTextView.text = getString(R.string.greeting_format, username)
         
         // Set current date
         dateTextView.text = DateUtils.formatForDisplay(System.currentTimeMillis())
