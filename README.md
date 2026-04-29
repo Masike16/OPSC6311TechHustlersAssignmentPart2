@@ -1,6 +1,6 @@
 # EasEBudgetV1
 Youtube video presentation link:
-https://youtu.be/Zc7mj2An0C0
+https://youtu.be/-IVl0UKKC_k
 
 EasEBudget is a comprehensive personal finance management application designed to help users track their spending, manage budgets, and visualize their financial health. Built specifically with the South African market in mind, it defaults to South African Rands (ZAR) and provides a user-friendly interface for daily financial tracking.
 
